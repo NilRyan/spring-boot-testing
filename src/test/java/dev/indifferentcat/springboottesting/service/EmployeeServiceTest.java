@@ -2,42 +2,49 @@ package dev.indifferentcat.springboottesting.service;
 
 import dev.indifferentcat.springboottesting.model.Employee;
 import dev.indifferentcat.springboottesting.repository.EmployeeRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+
+@ExtendWith(MockitoExtension.class)
 class EmployeeServiceTest {
 
+    @Mock
     private EmployeeRepository employeeRepository;
 
+    @InjectMocks
     private EmployeeService employeeService;
+
+    private Employee employee;
 
     @BeforeEach
     void setUp() {
-        employeeRepository = Mockito.mock(EmployeeRepository.class);
-        employeeService = new EmployeeService(employeeRepository);
+        employee = Employee.builder()
+                .email("neilryan@gmail.com")
+                .firstName("Neil")
+                .lastName("Ryan")
+                .build();
     }
 
     @Test
     public void givenEmployeeObject_whenSaveEmployee_thenReturnSavedEmployeeObject() {
         // given
-        Employee employee = Employee.builder()
-                .email("neilryan@gmail.com")
-                .firstName("Neil")
-                .lastName("Ryan")
-                .build();
-        BDDMockito.given(employeeRepository.findByEmail(employee.getEmail())).willReturn(Optional.empty());
-        BDDMockito.given(employeeRepository.save(employee)).willReturn(employee);
+        given(employeeRepository.findByEmail(employee.getEmail())).willReturn(Optional.empty());
+        given(employeeRepository.save(employee)).willReturn(employee);
 
         // when
         Employee savedEmployee = employeeService.saveEmployee(employee);
 
         // then
-        Assertions.assertThat(savedEmployee).isEqualTo(employee);
+        assertThat(savedEmployee).isEqualTo(employee);
 
 
 
